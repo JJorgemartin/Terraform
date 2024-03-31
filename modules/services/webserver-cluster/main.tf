@@ -1,5 +1,5 @@
 resource "aws_launch_configuration" "example" {
-	image_id = "ami-0fb653ca2d3203ac1"
+	image_id = var.ami
 	instance_type = var.instance_type
 	security_groups = [ aws_security_group.instance.id ]
 	
@@ -7,6 +7,7 @@ resource "aws_launch_configuration" "example" {
 		server_port = var.server_port
 		db_address = data.terraform_remote_state.db.outputs.address
 		db_port = data.terraform_remote_state.db.outputs.port
+    server_text = var.server_text
 	})
 	
 	#Required when using a launch configuration with an auto scaling group
@@ -17,12 +18,24 @@ resource "aws_launch_configuration" "example" {
 
 resource "aws_autoscaling_group" "example" {
   
+  #Explicitly depend on the launch configuration's name os each time it'sreplaced, this ASG is also replaced 
+  name = "${var.cluster_name}-${aws_launch_configuration.example.name}"
+
   launch_configuration = aws_launch_configuration.example.name
   vpc_zone_identifier = data.aws_subnets.default.ids
   target_group_arns = [ aws_lb_target_group.asg.arn ]
   health_check_type = "ELB"
   min_size = var.min_size
   max_size = var.max_size
+
+  #Wait for at least this many instances to pass health checks before cosidering the ASG deployment complete
+
+  min_elb_capacity = var.min_size
+
+  #When replacing this ASG, create the replecement first, and only delete the original after
+  lifecycle {
+    create_before_destroy = true
+  } 
 
   tag {
 	key = "Name"
