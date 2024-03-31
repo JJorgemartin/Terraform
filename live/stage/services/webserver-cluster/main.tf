@@ -6,8 +6,8 @@ module "webserver_cluster" {
   source = "../../../../modules/services/webserver-cluster"
 
   ami = "ami-0fb653ca2d3203ac1"
-  server_text = "New server text"
-  
+  server_text = var.server_text
+
   cluster_name           = var.cluster_name
   db_remote_state_bucket = var.db_remote_state_bucket
   db_remote_state_key    = var.db_remote_state_key
@@ -26,4 +26,8 @@ resource "aws_security_group_rule" "allow_testing_inbound" {
   to_port     = 12345
   protocol    = "tcp"
   cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_iam_user" "existing_user" {
+  name = "jjorgito"
 }

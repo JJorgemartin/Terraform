@@ -13,3 +13,9 @@ variable "cluster_name" {
   type        = string
   default     = "webservers-prod"
 }
+
+variable "server_text" {
+  description = "The text for each EC2 instance to display "
+  type = string
+  default = "Hello, World"
+}

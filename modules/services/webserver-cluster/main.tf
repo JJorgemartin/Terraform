@@ -18,8 +18,8 @@ resource "aws_launch_configuration" "example" {
 
 resource "aws_autoscaling_group" "example" {
   
-  #Explicitly depend on the launch configuration's name os each time it'sreplaced, this ASG is also replaced 
-  name = "${var.cluster_name}-${aws_launch_configuration.example.name}"
+  # Explicitly depend on the launch configuration's name os each time it'sreplaced, this ASG is also replaced 
+  name = var.cluster_name
 
   launch_configuration = aws_launch_configuration.example.name
   vpc_zone_identifier = data.aws_subnets.default.ids
@@ -28,15 +28,15 @@ resource "aws_autoscaling_group" "example" {
   min_size = var.min_size
   max_size = var.max_size
 
-  #Wait for at least this many instances to pass health checks before cosidering the ASG deployment complete
-
-  min_elb_capacity = var.min_size
-
-  #When replacing this ASG, create the replecement first, and only delete the original after
-  lifecycle {
-    create_before_destroy = true
-  } 
-
+  # Use instance refresh to roll out changes to the ASG
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
+  }
+   
+ 
   tag {
 	key = "Name"
 	value = var.cluster_name
@@ -45,7 +45,7 @@ resource "aws_autoscaling_group" "example" {
 
   dynamic "tag" {
     for_each = {
-      for key, value in var.var.custom_tags:
+      for key, value in var.custom_tags:
       key => upper(value)
       if key != "Name"
     }
@@ -67,7 +67,7 @@ resource "aws_autoscaling_schedule" "scale_out_during_business_hours" {
   desired_capacity      = 10
   recurrence            = "0 9 * * *"
 
-  autoscaling_group_name = module.webserver_cluster.asg_name
+  autoscaling_group_name = aws_autoscaling_group.example.name
 }
 
 resource "aws_autoscaling_schedule" "scale_in_at_night" {
@@ -79,11 +79,11 @@ resource "aws_autoscaling_schedule" "scale_in_at_night" {
   desired_capacity      = 2
   recurrence            = "0 17 * * *"
 
-  autoscaling_group_name = module.webserver_cluster.asg_name
+  autoscaling_group_name = aws_autoscaling_group.example.name
 }
 
 resource "aws_lb" "example" {
-  name = "${var.cluster_name}-alb"
+  name = var.cluster_name
   load_balancer_type = "application"
   subnets = data.aws_subnets.default.ids
   security_groups = [ aws_security_group.alb.id ]
@@ -191,22 +191,6 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu_utilization" {
   unit = "Percent"
 }
 
-resource "aws_cloudwatch_metric_alarm" "low_cpu_credit_balance" {
-  alarm_name = "${var.cluster_name}-low-cpu-credit-balance"
-  namespace = "AWS/EC2"
-  metric_name = "CPUCreditBalance"
-
-  dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.example.name
-  }
-
-  comparison_operator = "LessTanThreshold"
-  evaluation_periods = 1
-  period = 300
-  statistic = "Minimum"
-  threshold = 10
-  unit = "Count"
-}
 
 resource "aws_cloudwatch_metric_alarm" "low_cpu_credit_balance" {
   count = format("%.1s", var.instance_type) == "t" ? 1 : 0
@@ -219,7 +203,7 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu_credit_balance" {
     AutoScalingGroupName = aws_autoscaling_group.example.name
   }
   
-  comparison_operator = "LessTanThreshold"
+  comparison_operator = "LessThanThreshold"
   evaluation_periods = 1
   period = 300
   statistic = "Minimum"
@@ -238,15 +222,15 @@ data "aws_subnets" "default" {
 	} 
 }
 
-data "terraform_remote_state" "db" {
-  backend = "s3"
-
-  config = {
-	bucket = var.db_remote_state_bucket
-	key = var.db_remote_state_key
-	region = "us-east-2"
-  }
-}
+#data "terraform_remote_state" "db" {
+#  backend = "s3"
+#
+#  config = {
+#	  bucket = var.db_remote_state_bucket
+#	  key = var.db_remote_state_key
+#	  region = "us-east-2"
+#  }
+#}
 
 
 locals {

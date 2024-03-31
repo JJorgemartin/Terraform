@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
 	bucket = "jjterraform-up-and-running-state"
-	key = "stage/data-store/mysql/terraform.tfstate"
+	key = "live/prod/data-store/mysql/terraform.tfstate"
 	region = "us-east-2"
 	dynamodb_table = "terraform-up-and-running-locks"
 	encrypt = true

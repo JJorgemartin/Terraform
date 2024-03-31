@@ -2,15 +2,15 @@ provider "aws" {
   region = "us-east-2"
 }
 
-terraform {
-  backend "s3" {
-	bucket = "jjterraform-up-and-running-state"
-	key = "stage/data-store/mysql/terraform.tfstate"
-	region = "us-east-2"
-	dynamodb_table = "terraform-up-and-running-locks"
-	encrypt = true
-  }
-}
+#terraform {
+#  backend "s3" {
+#	bucket = "jjterraform-up-and-running-state"
+#	key = "live/stage/data-store/mysql/terraform.tfstate"
+#	region = "us-east-2"
+#	dynamodb_table = "terraform-up-and-running-locks"
+#	encrypt = true
+#  }
+#}
 
 resource "aws_db_instance" "example" {
   identifier_prefix = "terraform-up-and-running"

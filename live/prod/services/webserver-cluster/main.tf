@@ -3,7 +3,10 @@ provider "aws" {
 }
 
 module "webserver_cluster" {
-  source = "../../../modules/services/webserver-cluster"
+  source = "../../../../modules/services/webserver-cluster"
+
+  ami = "ami-0fb653ca2d3203ac1"
+  server_text = var.server_text
 
   cluster_name           = var.cluster_name
   db_remote_state_bucket = var.db_remote_state_bucket
@@ -14,9 +17,5 @@ module "webserver_cluster" {
   max_size      = 10
   enable_autoscaling = true
 
-  custom_tags {
-    Owner = "team-foo"
-    ManagedBy = "terraform"
-  }
 }
 
