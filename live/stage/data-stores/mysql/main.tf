@@ -18,7 +18,7 @@ resource "aws_db_instance" "example" {
   allocated_storage = 10
   instance_class = "db.t2.micro"
   skip_final_snapshot = true
-  db_name = "jjexample_database"
+  db_name = var.db_name
 
   #How should we set the username and password
 

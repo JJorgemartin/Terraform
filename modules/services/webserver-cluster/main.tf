@@ -144,8 +144,12 @@ resource "aws_security_group_rule" "allow_all_outbound" {
 }
 
 
+data "aws_vpc" "default" {
+  default = true
+}
+
 resource "aws_lb_target_group" "asg" {
-	name = "terraform-asg-example"
+	name = var.cluster_name
 	port = var.server_port
 	protocol = "HTTP"
 	vpc_id = data.aws_vpc.default.id
@@ -164,13 +168,13 @@ resource "aws_lb_listener_rule" "asg" {
   listener_arn = aws_lb_listener.http.arn
   priority = 100
   condition {
-	path_pattern {
-	  values = ["*"]
-	}
+	  path_pattern {
+	    values = ["*"]
+	  }
   }
   action {
-	type = "forward"
-	target_group_arn = aws_lb_target_group.asg.arn
+	  type = "forward"
+	  target_group_arn = aws_lb_target_group.asg.arn
   }
 }
 
@@ -211,9 +215,6 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu_credit_balance" {
   unit = "Count"
 }
 
-data "aws_vpc" "default" {
-  default = true
-}
 
 data "aws_subnets" "default" {
 	filter {
