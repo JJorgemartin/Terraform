@@ -22,7 +22,18 @@ resource "aws_db_instance" "example" {
 
   #How should we set the username and password
 
-  username = var.db_username
-  password = var.db_password
+  username = local.db_creds.username
+  password = local.db_creds.password
   
 }
+
+#data "aws_kms_secrets" "creds" {
+#  secret {
+#    name = "db"
+#    payload = file("${path.module}/db-creds.yml.encrypted")
+#  }
+#}
+
+#locals {
+#  db_creds = yamldecode(data.aws_kms_secrets.creds.plaintext["db"])
+#}
