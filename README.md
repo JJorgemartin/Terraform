@@ -18,9 +18,9 @@ Este repositorio sigue una estructura organizativa que refleja el orden y la org
 
 Este repositorio está organizado de la siguiente manera:
 
-- `global/`: Este directorio contiene los ejemplos prácticos proporcionados en el libro "Terraform: Up & Running". Cada ejemplo se encuentra en su propia carpeta y está acompañado de una documentación detallada que explica su propósito, configuración y cómo ejecutarlo.
-- `stage/`: En esta carpeta encontrarás ejercicios prácticos adicionales que se han creado para reforzar los conceptos aprendidos en el libro. Cada ejercicio está diseñado para proporcionar una oportunidad para practicar y profundizar en el conocimiento de Terraform.
-- `modules/`: Aquí se encuentran los scripts de utilidad que pueden ser utilizados para configurar el entorno de desarrollo, automatizar tareas comunes o realizar pruebas específicas.
+- `examples/`: En esta carpeta encontrarás ejercicios prácticos adicionales que se han creado para reforzar los conceptos aprendidos en el libro. Cada ejercicio está diseñado para proporcionar una oportunidad para practicar y profundizar en el conocimiento de Terraform.
+- `live/`: La estructura de organización se fundamenta en buenas prácticas, haciendo hincapié en la organización a través de la jerarquización mediante carpetas. En este caso la carpeta "live" va a tener dentro las carpetas de los distintos ambientes, como Stage y Prod. 
+- `modules/`: La estructura de organización se fundamenta en buenas prácticas, haciendo hincapié en la organización a través de la jerarquización mediante carpetas. En este caso la carpeta "modules" va a tener los modulos que van a utilizar en las demas carpetas.
 - `README.md`: Este archivo que estás leyendo proporciona una descripción general del proyecto, los recursos utilizados y la estructura del repositorio, así como instrucciones para contribuir al proyecto y la información de licencia.
 - Otros archivos: Además de los directorios mencionados anteriormente, es posible que encuentres otros archivos como configuraciones de CI/CD, plantillas de documentos o archivos de configuración adicionales según las necesidades del proyecto.
 
