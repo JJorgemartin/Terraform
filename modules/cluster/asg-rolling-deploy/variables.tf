@@ -22,11 +22,23 @@ variable "instance_type" {
 variable "min_size" {
   description = "The minium number of EC2 Instances in the ASG"
   type        = number
+
+  validation {
+    condition     = var.min_size > 0 && var.min_size <= 10
+    error_message = "ASGs must be of size 1-10 (inclusive)"
+  }
+
 }
 
 variable "max_size" {
   description = "The maximum number of EC2 Instances in the ASG"
   type        = number
+
+  validation {
+    condition     = var.max_size > 0 && var.max_size <= 10
+    error_message = "ASGs must be of size 1-10 (inclusive)"
+  }
+
 }
 
 variable "custom_tags" {
@@ -50,4 +62,32 @@ variable "server_text" {
   description = "The text the web server should return"
   type        = string
   default     = "Hello, World"
+}
+
+variable "subnets_ids" {
+  description = "The subnet IDs to deploy to"
+  type = list(string)
+}
+
+variable "target_group_arns" {
+  description = "The ARNs of ELB target groups in which to register Instances"
+  type = list(string)
+  default = []
+}
+
+variable "health_check_type" {
+  description = "The type of health to perform. Must be one of EC2, ELB."
+  type = string
+  default = "EC2"
+
+  validation {
+    condition = contains(["EC2", "ELB"], var.health_check_type)
+    error_message = "The health_check_type must be one of EC2 | ELB. "
+  }
+}
+
+variable "user_data" {
+  description = "The User Data script to run in each Instance at boot"
+  type = string
+  default = null
 }
