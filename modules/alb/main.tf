@@ -1,7 +1,5 @@
-
-
 resource "aws_lb" "example" {
-  name               = var.cluster_name
+  name               = var.alb_name
   load_balancer_type = "application"
   subnets            = data.aws_subnets.default.ids
   security_groups    = [aws_security_group.alb.id]
@@ -24,7 +22,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_security_group" "alb" {
-  name = "${var.cluster_name}-alb"
+  name = var.alb_name
 }
 
 resource "aws_security_group_rule" "allow_http_inbound" {
@@ -46,59 +44,6 @@ resource "aws_security_group_rule" "allow_all_outbound" {
   protocol    = local.tcp_protocol
   cidr_blocks = local.all_ips
 }
-
-
-data "aws_vpc" "default" {
-  default = true
-}
-
-resource "aws_lb_target_group" "asg" {
-  name     = var.cluster_name
-  port     = var.server_port
-  protocol = "HTTP"
-  vpc_id   = data.aws_vpc.default.id
-  health_check {
-    path                = "/"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 15
-    timeout             = 3
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-}
-
-resource "aws_lb_listener_rule" "asg" {
-  listener_arn = aws_lb_listener.http.arn
-  priority     = 100
-  condition {
-    path_pattern {
-      values = ["*"]
-    }
-  }
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.asg.arn
-  }
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
-
-#data "terraform_remote_state" "db" {
-#  backend = "s3"
-#
-#  config = {
-#	  bucket = var.db_remote_state_bucket
-#	  key = var.db_remote_state_key
-#	  region = "us-east-2"
-#  }
-#}
-
 
 locals {
   http_port    = 80
