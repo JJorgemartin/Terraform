@@ -60,4 +60,11 @@ resource "aws_instance" "example" {
   provisioner "remote-exec" {
     inline = [ "echo \"Hello, Worldd from $(uname -smp)\"" ]
   }
+
+  connection {
+    type = "ssh"
+    host = self.public_ip
+    user = "ubuntu"
+    private_key = tls_private_key.example.private_key_pem
+  }
 }
