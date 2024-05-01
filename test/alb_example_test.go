@@ -15,6 +15,11 @@ import(
 
 func TestAlbExample(t *testing.T){
 	opts := &terraform.Options{
-		TerraformDir : ""
+		
+		TerraformDir : "../examples/alb",
+
+		Vars: map[string]interface{}{
+			"alb_name": fmt.Sprintln("test-%s", random.UniqueId())
+		}
 	}
 }
